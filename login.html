@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Academic Planner — Iniciar sesión</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ============================================================
+       LOGIN PAGE — Estilos independientes
+       No depende de styles.css para cargarse rápido
+    ============================================================ */
+    :root {
+      --bg:        #F7F7F5;
+      --surface:   #FFFFFF;
+      --surface-2: #F3F2EF;
+      --border:    rgba(0,0,0,0.08);
+      --border-2:  rgba(0,0,0,0.13);
+      --text-1:    #0F0F0E;
+      --text-2:    #6B6B68;
+      --text-3:    #A3A39F;
+      --accent:    #2563EB;
+      --accent-bg: rgba(37,99,235,0.07);
+      --red:       #DC2626;
+      --red-bg:    rgba(220,38,38,0.07);
+      --green:     #16A34A;
+      --green-bg:  rgba(22,163,74,0.07);
+      --r-sm: 8px; --r-md: 12px; --r-lg: 16px; --r-xl: 20px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+      --shadow-md: 0 4px 20px rgba(0,0,0,0.08);
+      --shadow-lg: 0 16px 48px rgba(0,0,0,0.10);
+      --ease: cubic-bezier(0.25,0,0,1);
+      --dur: 180ms;
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    [data-theme="dark"] {
+      --bg:        #111110;
+      --surface:   #1C1C1A;
+      --surface-2: #242422;
+      --border:    rgba(255,255,255,0.07);
+      --border-2:  rgba(255,255,255,0.12);
+      --text-1:    #F0EFEB;
+      --text-2:    #8A8A84;
+      --text-3:    #5C5C58;
+      --accent-bg: rgba(37,99,235,0.14);
+      --red-bg:    rgba(220,38,38,0.12);
+      --green-bg:  rgba(22,163,74,0.12);
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+      --shadow-md: 0 4px 20px rgba(0,0,0,0.35);
+      --shadow-lg: 0 16px 48px rgba(0,0,0,0.45);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 15px; -webkit-font-smoothing: antialiased; }
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text-1);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      transition: background var(--dur) var(--ease);
+    }
+
+    /* ── Layout ── */
+    .auth-wrap {
+      width: 100%;
+      max-width: 400px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* ── Logo ── */
+    .logo-block {
+      text-align: center;
+    }
+    .logo-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      background: var(--text-1);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+      box-shadow: var(--shadow-md);
+    }
+    .logo-icon svg { display: block; }
+    .logo-name {
+      font-size: 1.5rem;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      color: var(--text-1);
+    }
+    .logo-name span { color: var(--accent); }
+    .logo-tagline {
+      font-size: 0.82rem;
+      color: var(--text-3);
+      margin-top: 4px;
+    }
+
+    /* ── Card ── */
+    .auth-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-xl);
+      padding: 2rem;
+      box-shadow: var(--shadow-lg);
+      transition: background var(--dur) var(--ease);
+    }
+
+    /* ── Tab switcher ── */
+    .tab-switch {
+      display: flex;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--r-md);
+      padding: 3px;
+      margin-bottom: 1.75rem;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 7px;
+      border-radius: var(--r-sm);
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-2);
+      cursor: pointer;
+      border: none;
+      background: none;
+      font-family: var(--font);
+      transition: all var(--dur) var(--ease);
+    }
+    .tab-btn.active {
+      background: var(--surface);
+      color: var(--text-1);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* ── Form ── */
+    .form-section { display: none; }
+    .form-section.active { display: block; }
+
+    .form-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.25rem;
+    }
+    .form-subtitle {
+      font-size: 0.82rem;
+      color: var(--text-3);
+      margin-bottom: 1.5rem;
+    }
+
+    .field { margin-bottom: 1rem; }
+    .field-label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--text-2);
+      margin-bottom: 5px;
+    }
+    .field-wrap { position: relative; }
+    .field-input {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1.5px solid var(--border-2);
+      border-radius: var(--r-sm);
+      background: var(--surface-2);
+      color: var(--text-1);
+      font-size: 0.875rem;
+      font-family: var(--font);
+      outline: none;
+      transition: border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease), background var(--dur) var(--ease);
+    }
+    .field-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-bg);
+      background: var(--surface);
+    }
+    .field-input::placeholder { color: var(--text-3); }
+    .field-input.error { border-color: var(--red); box-shadow: 0 0 0 3px var(--red-bg); }
+    .field-input.ok    { border-color: var(--green); }
+
+    /* Password toggle */
+    .field-toggle {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-3);
+      cursor: pointer;
+      padding: 2px;
+      border: none;
+      background: none;
+      line-height: 1;
+    }
+    .field-toggle:hover { color: var(--text-2); }
+    .field-input.has-toggle { padding-right: 36px; }
+
+    /* Strength bar */
+    .strength-wrap { margin-top: 6px; display: none; }
+    .strength-wrap.show { display: block; }
+    .strength-bar {
+      height: 3px;
+      background: var(--surface-2);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 4px;
+    }
+    .strength-fill {
+      height: 100%;
+      border-radius: 99px;
+      transition: width 0.3s var(--ease), background 0.3s;
+      width: 0%;
+    }
+    .strength-label { font-size: 0.7rem; color: var(--text-3); }
+
+    /* Field error message */
+    .field-error {
+      font-size: 0.72rem;
+      color: var(--red);
+      margin-top: 4px;
+      display: none;
+    }
+    .field-error.show { display: block; }
+
+    /* Submit button */
+    .btn-submit {
+      width: 100%;
+      padding: 10px;
+      background: var(--text-1);
+      color: var(--surface);
+      border: none;
+      border-radius: var(--r-sm);
+      font-size: 0.9rem;
+      font-weight: 500;
+      font-family: var(--font);
+      cursor: pointer;
+      margin-top: 0.5rem;
+      transition: all var(--dur) var(--ease);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-submit:hover { opacity: 0.85; }
+    .btn-submit:active { transform: scale(0.98); }
+    .btn-submit:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+
+    /* Spinner */
+    .spinner {
+      width: 15px; height: 15px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: none;
+    }
+    .spinner.show { display: block; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Alert message */
+    .alert {
+      padding: 10px 12px;
+      border-radius: var(--r-sm);
+      font-size: 0.82rem;
+      font-weight: 450;
+      margin-bottom: 1rem;
+      display: none;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .alert.show { display: flex; }
+    .alert.error   { background: var(--red-bg);   color: var(--red);   border: 1px solid rgba(220,38,38,0.2); }
+    .alert.success { background: var(--green-bg); color: var(--green); border: 1px solid rgba(22,163,74,0.2); }
+
+    /* Divider */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 1.25rem 0;
+      color: var(--text-3);
+      font-size: 0.75rem;
+    }
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* Forgot password link */
+    .link-sm {
+      font-size: 0.78rem;
+      color: var(--text-3);
+      cursor: pointer;
+      text-decoration: none;
+      transition: color var(--dur) var(--ease);
+      border: none;
+      background: none;
+      font-family: var(--font);
+      padding: 0;
+    }
+    .link-sm:hover { color: var(--accent); }
+
+    /* Remember me checkbox */
+    .check-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 1rem;
+    }
+    .check-box {
+      width: 16px; height: 16px;
+      border-radius: 4px;
+      border: 1.5px solid var(--border-2);
+      background: var(--surface-2);
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      position: relative;
+      flex-shrink: 0;
+      transition: all var(--dur) var(--ease);
+    }
+    .check-box:checked { background: var(--text-1); border-color: var(--text-1); }
+    .check-box:checked::after {
+      content: '';
+      position: absolute;
+      left: 3px; top: 1px;
+      width: 8px; height: 5px;
+      border-left: 2px solid #fff;
+      border-bottom: 2px solid #fff;
+      transform: rotate(-45deg);
+    }
+    .check-label { font-size: 0.82rem; color: var(--text-2); cursor: pointer; }
+
+    /* Requirements list */
+    .req-list {
+      list-style: none;
+      margin-top: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .req-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.72rem;
+      color: var(--text-3);
+      transition: color var(--dur);
+    }
+    .req-item.met { color: var(--green); }
+    .req-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--text-3);
+      flex-shrink: 0;
+      transition: background var(--dur);
+    }
+    .req-item.met .req-dot { background: var(--green); }
+
+    /* Footer note */
+    .auth-footer {
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--text-3);
+    }
+
+    /* Theme toggle at bottom */
+    .theme-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+    }
+    .theme-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 99px;
+      border: 1px solid var(--border-2);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.78rem;
+      color: var(--text-2);
+      font-family: var(--font);
+      transition: background var(--dur) var(--ease);
+    }
+    .theme-pill:hover { background: var(--surface-2); }
+
+    /* ── Animaciones de entrada ── */
+    .auth-wrap { animation: slideUp 0.35s var(--ease) both; }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: none; }
+    }
+    .form-section.active { animation: fadeIn 0.2s var(--ease) both; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: none; }
+    }
+
+    @media (max-width: 440px) {
+      body { padding: 1rem; align-items: flex-start; padding-top: 2rem; }
+      .auth-card { padding: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="auth-wrap">
+
+  <!-- ── LOGO ── -->
+  <div class="logo-block">
+    <div class="logo-icon">
+      <!-- Logo: cuadrado blanco con las letras AP -->
+      <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+        <rect width="30" height="30" rx="7" fill="white" fill-opacity="0"/>
+        <!-- Letra A -->
+        <path d="M7 22L12 8L17 22" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="9" y1="17" x2="15" y2="17" stroke="white" stroke-width="2" stroke-linecap="round"/>
+        <!-- Letra P -->
+        <path d="M19 22V8" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+        <path d="M19 8h3.5a3 3 0 0 1 0 6H19" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="logo-name">Academic<span>Planner</span></div>
+    <div class="logo-tagline">Organiza tu vida universitaria</div>
+  </div>
+
+  <!-- ── CARD ── -->
+  <div class="auth-card">
+
+    <!-- Tabs -->
+    <div class="tab-switch">
+      <button class="tab-btn active" id="tabLogin" onclick="switchTab('login')">Iniciar sesión</button>
+      <button class="tab-btn"        id="tabReg"   onclick="switchTab('register')">Crear cuenta</button>
+    </div>
+
+    <!-- Alert global -->
+    <div class="alert" id="globalAlert">
+      <span id="alertIcon">⚠</span>
+      <span id="alertMsg"></span>
+    </div>
+
+    <!-- ══════════════════════════════════
+         FORMULARIO: LOGIN
+    ══════════════════════════════════ -->
+    <div class="form-section active" id="sectionLogin">
+      <div class="form-title">Bienvenido de vuelta</div>
+      <div class="form-subtitle">Ingresa tus credenciales para continuar</div>
+
+      <div class="field">
+        <label class="field-label" for="loginEmail">Correo electrónico</label>
+        <input class="field-input" type="email" id="loginEmail"
+               placeholder="tu@correo.com" autocomplete="email" />
+        <div class="field-error" id="loginEmailErr">Ingresa un correo válido</div>
+      </div>
+
+      <div class="field">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+          <label class="field-label" for="loginPass" style="margin:0">Contraseña</label>
+          <button class="link-sm" onclick="showForgot()">¿Olvidaste tu contraseña?</button>
+        </div>
+        <div class="field-wrap">
+          <input class="field-input has-toggle" type="password" id="loginPass"
+                 placeholder="Tu contraseña" autocomplete="current-password" />
+          <button class="field-toggle" onclick="togglePass('loginPass','eyeLogin')" tabindex="-1">
+            <svg id="eyeLogin" width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z" stroke="currentColor" stroke-width="1.3"/>
+              <circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.3"/>
+            </svg>
+          </button>
+        </div>
+        <div class="field-error" id="loginPassErr">Contraseña incorrecta</div>
+      </div>
+
+      <div class="check-row">
+        <input class="check-box" type="checkbox" id="rememberMe" />
+        <label class="check-label" for="rememberMe">Recordarme en este dispositivo</label>
+      </div>
+
+      <button class="btn-submit" id="btnLogin" onclick="handleLogin()">
+        <div class="spinner" id="spinLogin"></div>
+        <span id="btnLoginTxt">Iniciar sesión</span>
+      </button>
+    </div>
+
+    <!-- ══════════════════════════════════
+         FORMULARIO: REGISTRO
+    ══════════════════════════════════ -->
+    <div class="form-section" id="sectionRegister">
+      <div class="form-title">Crea tu cuenta</div>
+      <div class="form-subtitle">Completa los datos para comenzar</div>
+
+      <div class="field">
+        <label class="field-label" for="regName">Nombre completo</label>
+        <input class="field-input" type="text" id="regName"
+               placeholder="Ej: Ana García" autocomplete="name" oninput="validateRegName()" />
+        <div class="field-error" id="regNameErr">Ingresa tu nombre completo</div>
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="regEmail">Correo electrónico</label>
+        <input class="field-input" type="email" id="regEmail"
+               placeholder="tu@correo.com" autocomplete="email" oninput="validateRegEmail()" />
+        <div class="field-error" id="regEmailErr">Ingresa un correo válido</div>
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="regPass">Contraseña</label>
+        <div class="field-wrap">
+          <input class="field-input has-toggle" type="password" id="regPass"
+                 placeholder="Mínimo 8 caracteres" autocomplete="new-password"
+                 oninput="validateRegPass()" />
+          <button class="field-toggle" onclick="togglePass('regPass','eyeReg')" tabindex="-1">
+            <svg id="eyeReg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z" stroke="currentColor" stroke-width="1.3"/>
+              <circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.3"/>
+            </svg>
+          </button>
+        </div>
+        <!-- Barra de fortaleza -->
+        <div class="strength-wrap" id="strengthWrap">
+          <div class="strength-bar">
+            <div class="strength-fill" id="strengthFill"></div>
+          </div>
+          <div class="strength-label" id="strengthLabel">Muy débil</div>
+        </div>
+        <!-- Requisitos -->
+        <ul class="req-list" id="reqList">
+          <li class="req-item" id="req-len"><div class="req-dot"></div>Mínimo 8 caracteres</li>
+          <li class="req-item" id="req-upper"><div class="req-dot"></div>Una letra mayúscula</li>
+          <li class="req-item" id="req-num"><div class="req-dot"></div>Un número</li>
+          <li class="req-item" id="req-sym"><div class="req-dot"></div>Un símbolo (!@#$...)</li>
+        </ul>
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="regPassConfirm">Confirmar contraseña</label>
+        <div class="field-wrap">
+          <input class="field-input has-toggle" type="password" id="regPassConfirm"
+                 placeholder="Repite tu contraseña" autocomplete="new-password"
+                 oninput="validateRegConfirm()" />
+          <button class="field-toggle" onclick="togglePass('regPassConfirm','eyeConfirm')" tabindex="-1">
+            <svg id="eyeConfirm" width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z" stroke="currentColor" stroke-width="1.3"/>
+              <circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.3"/>
+            </svg>
+          </button>
+        </div>
+        <div class="field-error" id="regConfirmErr">Las contraseñas no coinciden</div>
+      </div>
+
+      <button class="btn-submit" id="btnRegister" onclick="handleRegister()">
+        <div class="spinner" id="spinReg"></div>
+        <span id="btnRegTxt">Crear cuenta</span>
+      </button>
+    </div>
+
+    <!-- ══════════════════════════════════
+         FORMULARIO: OLVIDÉ CONTRASEÑA
+    ══════════════════════════════════ -->
+    <div class="form-section" id="sectionForgot">
+      <button onclick="switchTab('login')" style="
+        display:flex;align-items:center;gap:4px;
+        font-size:.78rem;color:var(--text-3);
+        margin-bottom:1rem;cursor:pointer;
+        border:none;background:none;font-family:var(--font);padding:0;
+      " onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text-3)'">
+        ← Volver
+      </button>
+      <div class="form-title">Recuperar contraseña</div>
+      <div class="form-subtitle">Te enviaremos un enlace para restablecer tu contraseña</div>
+
+      <div class="field">
+        <label class="field-label" for="forgotEmail">Correo electrónico</label>
+        <input class="field-input" type="email" id="forgotEmail" placeholder="tu@correo.com" />
+        <div class="field-error" id="forgotEmailErr">Ingresa un correo válido</div>
+      </div>
+
+      <button class="btn-submit" onclick="handleForgot()">
+        Enviar enlace de recuperación
+      </button>
+    </div>
+
+  </div>
+
+  <!-- ── Footer ── -->
+  <div class="auth-footer">
+    <div class="theme-row">
+      <button class="theme-pill" onclick="toggleTheme()" id="themeBtn">
+        <svg id="themeIcon" width="13" height="13" viewBox="0 0 15 15" fill="none">
+          <path d="M7.5 1v1M7.5 13v1M1 7.5H2M13 7.5h1M3.2 3.2l.7.7M11.1 11.1l.7.7M3.2 11.8l.7-.7M11.1 4.4l.7-.7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="7.5" cy="7.5" r="3" stroke="currentColor" stroke-width="1.5"/>
+        </svg>
+        <span id="themeLabel">Modo oscuro</span>
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============================================================
+     JAVASCRIPT
+============================================================ -->
+<script>
+'use strict';
+
+/* ── Helpers ── */
+const el  = id => document.getElementById(id);
+const val = id => (el(id)?.value || '').trim();
+
+/* ── Tema ── */
+let theme = localStorage.getItem('ap_theme') || 'light';
+applyTheme();
+function applyTheme() {
+  document.documentElement.setAttribute('data-theme', theme);
+  const dark = theme === 'dark';
+  el('themeIcon').innerHTML = dark
+    ? `<path d="M7.5 1a6.5 6.5 0 1 0 6.5 6.5A5 5 0 0 1 7.5 1z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/>`
+    : `<path d="M7.5 1v1M7.5 13v1M1 7.5H2M13 7.5h1M3.2 3.2l.7.7M11.1 11.1l.7.7M3.2 11.8l.7-.7M11.1 4.4l.7-.7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="7.5" cy="7.5" r="3" stroke="currentColor" stroke-width="1.5"/>`;
+  el('themeLabel').textContent = dark ? 'Modo claro' : 'Modo oscuro';
+}
+function toggleTheme() {
+  theme = theme === 'light' ? 'dark' : 'light';
+  localStorage.setItem('ap_theme', theme);
+  applyTheme();
+}
+
+/* ── Tabs ── */
+function switchTab(tab) {
+  ['login','register','forgot'].forEach(t => {
+    el('section' + t.charAt(0).toUpperCase() + t.slice(1))?.classList.remove('active');
+  });
+  el('tabLogin')?.classList.remove('active');
+  el('tabReg')?.classList.remove('active');
+  hideAlert();
+
+  if (tab === 'login') {
+    el('sectionLogin').classList.add('active');
+    el('tabLogin').classList.add('active');
+  } else if (tab === 'register') {
+    el('sectionRegister').classList.add('active');
+    el('tabReg').classList.add('active');
+  } else if (tab === 'forgot') {
+    el('sectionForgot').classList.add('active');
+  }
+}
+function showForgot() { switchTab('forgot'); }
+
+/* ── Alert ── */
+function showAlert(msg, type = 'error') {
+  const a = el('globalAlert');
+  a.className = 'alert show ' + type;
+  el('alertIcon').textContent = type === 'error' ? '⚠' : '✓';
+  el('alertMsg').textContent  = msg;
+}
+function hideAlert() {
+  el('globalAlert').className = 'alert';
+}
+
+/* ── Mostrar/ocultar contraseña ── */
+function togglePass(inputId, iconId) {
+  const inp  = el(inputId);
+  const icon = el(iconId);
+  const show = inp.type === 'password';
+  inp.type   = show ? 'text' : 'password';
+  icon.innerHTML = show
+    ? `<path d="M1 1l14 14M6.5 6.8A3 3 0 0 0 9.2 9.5M4.2 4.4C2.5 5.6 1 8 1 8s2.5 5 7 5a7.3 7.3 0 0 0 3.8-1.1M7 3c.3 0 .7 0 1 .1C12.2 3.6 15 8 15 8a11 11 0 0 1-1.5 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" fill="none"/>`
+    : `<path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.3"/>`;
+}
+
+/* ── Validaciones en tiempo real ── */
+function validateRegName() {
+  const v = val('regName');
+  const ok = v.length >= 2 && v.includes(' ');
+  el('regName').classList.toggle('error', !ok && v.length > 0);
+  el('regName').classList.toggle('ok',    ok);
+  el('regNameErr').classList.toggle('show', !ok && v.length > 0);
+  return ok;
+}
+function validateRegEmail() {
+  const v   = val('regEmail');
+  const ok  = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+  el('regEmail').classList.toggle('error', !ok && v.length > 0);
+  el('regEmail').classList.toggle('ok',    ok);
+  el('regEmailErr').textContent = emailExists(v) ? 'Este correo ya está registrado' : 'Ingresa un correo válido';
+  el('regEmailErr').classList.toggle('show', (!ok || emailExists(v)) && v.length > 0);
+  return ok && !emailExists(v);
+}
+function validateRegPass() {
+  const v = el('regPass').value;
+  el('strengthWrap').classList.toggle('show', v.length > 0);
+  const checks = {
+    len:   v.length >= 8,
+    upper: /[A-Z]/.test(v),
+    num:   /[0-9]/.test(v),
+    sym:   /[^A-Za-z0-9]/.test(v),
+  };
+  Object.keys(checks).forEach(k => {
+    el('req-' + k).classList.toggle('met', checks[k]);
+  });
+  const score = Object.values(checks).filter(Boolean).length;
+  const labels = ['','Muy débil','Débil','Buena','Fuerte'];
+  const colors = ['','#DC2626','#F97316','#EAB308','#16A34A'];
+  el('strengthFill').style.width      = (score * 25) + '%';
+  el('strengthFill').style.background = colors[score];
+  el('strengthLabel').textContent     = labels[score];
+  const ok = Object.values(checks).every(Boolean);
+  el('regPass').classList.toggle('error', !ok && v.length > 0);
+  el('regPass').classList.toggle('ok',    ok);
+  if (el('regPassConfirm').value) validateRegConfirm();
+  return ok;
+}
+function validateRegConfirm() {
+  const p1 = el('regPass').value;
+  const p2 = el('regPassConfirm').value;
+  const ok = p1 === p2 && p2.length > 0;
+  el('regPassConfirm').classList.toggle('error', !ok && p2.length > 0);
+  el('regPassConfirm').classList.toggle('ok',    ok);
+  el('regConfirmErr').classList.toggle('show', !ok && p2.length > 0);
+  return ok;
+}
+
+/* ── localStorage usuarios ── */
+function getUsers() {
+  return JSON.parse(localStorage.getItem('ap_users') || '[]');
+}
+function saveUsers(users) {
+  localStorage.setItem('ap_users', JSON.stringify(users));
+}
+function emailExists(email) {
+  return getUsers().some(u => u.email.toLowerCase() === email.toLowerCase());
+}
+function hashSimple(str) {
+  /* Hash simple para demo — en producción usar bcrypt en servidor */
+  let h = 0;
+  for (let i = 0; i < str.length; i++) {
+    h = Math.imul(31, h) + str.charCodeAt(i) | 0;
+  }
+  return h.toString(16);
+}
+
+/* ── Loading state ── */
+function setLoading(btnId, spinId, txtId, loading) {
+  el(btnId).disabled = loading;
+  el(spinId).classList.toggle('show', loading);
+  el(txtId).style.opacity = loading ? '0' : '1';
+}
+
+/* ── LOGIN ── */
+function handleLogin() {
+  hideAlert();
+  const email = val('loginEmail');
+  const pass  = el('loginPass').value;
+  let ok = true;
+
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    el('loginEmail').classList.add('error');
+    el('loginEmailErr').classList.add('show');
+    ok = false;
+  } else {
+    el('loginEmail').classList.remove('error');
+    el('loginEmailErr').classList.remove('show');
+  }
+  if (pass.length < 1) {
+    el('loginPass').classList.add('error');
+    el('loginPassErr').classList.add('show');
+    ok = false;
+  } else {
+    el('loginPass').classList.remove('error');
+    el('loginPassErr').classList.remove('show');
+  }
+  if (!ok) return;
+
+  setLoading('btnLogin','spinLogin','btnLoginTxt', true);
+
+  /* Simular latencia (como si fuera un servidor) */
+  setTimeout(() => {
+    const users = getUsers();
+    const user  = users.find(u =>
+      u.email.toLowerCase() === email.toLowerCase() &&
+      u.password === hashSimple(pass)
+    );
+
+    if (!user) {
+      setLoading('btnLogin','spinLogin','btnLoginTxt', false);
+      el('loginPass').classList.add('error');
+      el('loginPassErr').textContent = 'Correo o contraseña incorrectos';
+      el('loginPassErr').classList.add('show');
+      showAlert('Credenciales incorrectas. Verifica tus datos.', 'error');
+      return;
+    }
+
+    /* Guardar sesión */
+    const session = { userId: user.id, name: user.name, email: user.email };
+    if (el('rememberMe').checked) {
+      localStorage.setItem('ap_session', JSON.stringify(session));
+    } else {
+      sessionStorage.setItem('ap_session', JSON.stringify(session));
+    }
+
+    /* Guardar perfil en el formato que usa el resto de la app */
+    localStorage.setItem('ap_profile', JSON.stringify({
+      name: user.name, university: user.university || '',
+      career: user.career || '', semester: ''
+    }));
+
+    showAlert('¡Bienvenido, ' + user.name.split(' ')[0] + '! Redirigiendo…', 'success');
+    setTimeout(() => { window.location.href = 'index.html'; }, 900);
+  }, 700);
+}
+
+/* ── REGISTRO ── */
+function handleRegister() {
+  hideAlert();
+  const n1 = validateRegName();
+  const n2 = validateRegEmail();
+  const n3 = validateRegPass();
+  const n4 = validateRegConfirm();
+  if (!n1 || !n2 || !n3 || !n4) {
+    showAlert('Corrige los campos marcados para continuar.', 'error');
+    return;
+  }
+
+  setLoading('btnRegister','spinReg','btnRegTxt', true);
+
+  setTimeout(() => {
+    const users = getUsers();
+    const newUser = {
+      id:        Date.now().toString(36),
+      name:      val('regName'),
+      email:     val('regEmail').toLowerCase(),
+      password:  hashSimple(el('regPass').value),
+      createdAt: Date.now(),
+    };
+    users.push(newUser);
+    saveUsers(users);
+
+    setLoading('btnRegister','spinReg','btnRegTxt', false);
+    showAlert('¡Cuenta creada! Ahora puedes iniciar sesión.', 'success');
+
+    /* Pre-llenar el login y cambiar de tab */
+    setTimeout(() => {
+      switchTab('login');
+      el('loginEmail').value = newUser.email;
+      el('loginPass').focus();
+    }, 1200);
+  }, 800);
+}
+
+/* ── RECUPERAR CONTRASEÑA ── */
+function handleForgot() {
+  const email = val('forgotEmail');
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    el('forgotEmail').classList.add('error');
+    el('forgotEmailErr').classList.add('show');
+    return;
+  }
+  el('forgotEmail').classList.remove('error');
+  el('forgotEmailErr').classList.remove('show');
+  /* En una app real aquí llamarías a tu backend */
+  showAlert('Si el correo está registrado, recibirás un enlace en breve.', 'success');
+  el('forgotEmail').value = '';
+}
+
+/* ── Verificar sesión activa ── */
+(function checkSession() {
+  const s = localStorage.getItem('ap_session') || sessionStorage.getItem('ap_session');
+  if (s) {
+    try {
+      const session = JSON.parse(s);
+      if (session?.userId) window.location.href = 'index.html';
+    } catch(_) {}
+  }
+})();
+
+/* ── Enter para enviar ── */
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  if (el('sectionLogin').classList.contains('active'))    handleLogin();
+  if (el('sectionRegister').classList.contains('active')) handleRegister();
+  if (el('sectionForgot').classList.contains('active'))   handleForgot();
+});
+</script>
+
+</body>
+</html>

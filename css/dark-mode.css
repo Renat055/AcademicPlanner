@@ -1,0 +1,119 @@
+/* ============================================================
+   dark-mode.css — Ajustes adicionales para modo oscuro
+   Importado automáticamente por styles.css si se necesitan
+   overrides específicos que no cubre el sistema de variables.
+   ============================================================ */
+
+/* ---- Inputs en dark mode ---- */
+[data-theme="dark"] .field-input,
+[data-theme="dark"] .field-select,
+[data-theme="dark"] .search-input,
+[data-theme="dark"] .select-sm,
+[data-theme="dark"] .cfg-input {
+  background: var(--surface-2);
+  color: var(--text-1);
+  border-color: var(--border-2);
+}
+
+[data-theme="dark"] .field-input::placeholder,
+[data-theme="dark"] .search-input::placeholder {
+  color: var(--text-3);
+}
+
+/* ---- Logo mark en dark mode ---- */
+[data-theme="dark"] .logo-mark {
+  background: var(--text-1);
+}
+
+/* ---- Avatar en dark mode ---- */
+[data-theme="dark"] .avatar {
+  background: var(--text-1);
+  color: var(--bg);
+}
+
+/* ---- Profile avatar big en dark mode ---- */
+[data-theme="dark"] .profile-avatar-big {
+  background: rgba(255,255,255,0.08);
+  color: var(--text-1);
+}
+
+/* ---- Banner en dark mode ---- */
+[data-theme="dark"] .avg-banner {
+  background: var(--surface-2);
+  border: 1px solid var(--border-2);
+}
+[data-theme="dark"] .avg-banner .avg-number,
+[data-theme="dark"] .avg-banner .avg-label,
+[data-theme="dark"] .avg-banner .avg-subject-name,
+[data-theme="dark"] .avg-banner .avg-subject-val {
+  color: var(--text-1);
+}
+[data-theme="dark"] .avg-prog-wrap { background: var(--surface-3); }
+[data-theme="dark"] .avg-prog-fill { background: var(--accent); }
+
+/* ---- Task check done en dark mode ---- */
+[data-theme="dark"] .task-check.done {
+  background: var(--text-1);
+  color: var(--bg);
+}
+
+/* ---- Pom mode active en dark mode ---- */
+[data-theme="dark"] .pom-mode.active {
+  background: var(--surface-2);
+  box-shadow: none;
+}
+
+/* ---- Nav badge en dark ---- */
+[data-theme="dark"] .nav-badge {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* ---- Pill active en dark ---- */
+[data-theme="dark"] .pill.active {
+  background: var(--text-1);
+  color: var(--bg);
+}
+
+/* ---- Btn primary en dark ---- */
+[data-theme="dark"] .btn-primary {
+  background: var(--text-1);
+  color: var(--bg);
+}
+
+/* ---- Select custom arrow color en dark ---- */
+[data-theme="dark"] .field-select,
+[data-theme="dark"] .select-sm {
+  background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23666' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+/* ---- Week bar in dark ---- */
+[data-theme="dark"] .week-bar-fill.today {
+  background: var(--text-1);
+}
+
+/* ---- Onboarding en dark mode ---- */
+[data-theme="dark"] #onboardingOverlay {
+  background: var(--bg);
+}
+
+/* ---- Subject card head en dark ---- */
+[data-theme="dark"] .subject-card-head,
+[data-theme="dark"] .subject-card-body,
+[data-theme="dark"] .subject-card-foot {
+  background: var(--surface);
+}
+
+/* ---- Scrollbar en dark ---- */
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: var(--surface-3);
+}
+
+/* ---- Toast en dark ---- */
+[data-theme="dark"] .toast {
+  background: var(--surface-2);
+  color: var(--text-1);
+  border: 1px solid var(--border-2);
+}
+[data-theme="dark"] .toast.success { background: var(--green); color: #fff; border-color: transparent; }
+[data-theme="dark"] .toast.error   { background: var(--red);   color: #fff; border-color: transparent; }
