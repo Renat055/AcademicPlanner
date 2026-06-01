@@ -183,7 +183,15 @@
         <div class="card">
           <div class="card-head">
             <span class="card-title">Tareas pendientes</span>
-            <button class="link-btn" onclick="navigate('tasks')">Ver todas</button>
+            <div style="display:flex;gap:6px;align-items:center;">
+              <button class="link-btn" onclick="openTaskModal()" title="Agregar tarea" style="
+                display:inline-flex;align-items:center;gap:3px;
+                padding:3px 8px;border-radius:6px;
+                background:var(--accent-bg);color:var(--accent);
+                font-weight:600;font-size:.78rem;
+              ">+ Nueva</button>
+              <button class="link-btn" onclick="navigate('tasks')">Ver todas</button>
+            </div>
           </div>
           <div id="dashTasks" class="list-wrap">
             <div class="empty-msg">Sin tareas pendientes</div>
@@ -194,7 +202,15 @@
         <div class="card">
           <div class="card-head">
             <span class="card-title">Próximos exámenes</span>
-            <button class="link-btn" onclick="navigate('calendar')">Calendario</button>
+            <div style="display:flex;gap:6px;align-items:center;">
+              <button class="link-btn" onclick="openEventModal(null, null, 'exam')" title="Agregar examen" style="
+                display:inline-flex;align-items:center;gap:3px;
+                padding:3px 8px;border-radius:6px;
+                background:var(--accent-bg);color:var(--accent);
+                font-weight:600;font-size:.78rem;
+              ">+ Nuevo</button>
+              <button class="link-btn" onclick="navigate('calendar')">Calendario</button>
+            </div>
           </div>
           <div class="list-wrap" id="dashExams">
             <div class="empty-msg">Sin exámenes próximos</div>
