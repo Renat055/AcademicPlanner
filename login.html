@@ -734,7 +734,9 @@ function validateRegConfirm() {
 
 /* ── localStorage usuarios ── */
 function getUsers() {
-  return JSON.parse(localStorage.getItem('ap_users') || '[]');
+  try {
+    return JSON.parse(localStorage.getItem('ap_users') || '[]');
+  } catch (_) { return []; }
 }
 function saveUsers(users) {
   localStorage.setItem('ap_users', JSON.stringify(users));
@@ -742,20 +744,29 @@ function saveUsers(users) {
 function emailExists(email) {
   return getUsers().some(u => u.email.toLowerCase() === email.toLowerCase());
 }
+
+/*
+ * Hash simple determinista para demo.
+ * IMPORTANTE: en un proyecto real con backend usar bcrypt/argon2.
+ * Para localStorage esta implementación es suficiente dado que
+ * el atacante ya tendría acceso físico al dispositivo.
+ */
 function hashSimple(str) {
-  /* Hash simple para demo — en producción usar bcrypt en servidor */
-  let h = 0;
+  let h = 5381;
   for (let i = 0; i < str.length; i++) {
-    h = Math.imul(31, h) + str.charCodeAt(i) | 0;
+    h = ((h << 5) + h) ^ str.charCodeAt(i);
+    h = h >>> 0; // convertir a unsigned 32-bit
   }
-  return h.toString(16);
+  return h.toString(16).padStart(8, '0');
 }
 
 /* ── Loading state ── */
 function setLoading(btnId, spinId, txtId, loading) {
-  el(btnId).disabled = loading;
-  el(spinId).classList.toggle('show', loading);
-  el(txtId).style.opacity = loading ? '0' : '1';
+  const btn = el(btnId);
+  if (btn) btn.disabled = loading;
+  el(spinId)?.classList.toggle('show', loading);
+  const txt = el(txtId);
+  if (txt) txt.style.opacity = loading ? '0' : '1';
 }
 
 /* ── LOGIN ── */
@@ -783,9 +794,8 @@ function handleLogin() {
   }
   if (!ok) return;
 
-  setLoading('btnLogin','spinLogin','btnLoginTxt', true);
+  setLoading('btnLogin', 'spinLogin', 'btnLoginTxt', true);
 
-  /* Simular latencia (como si fuera un servidor) */
   setTimeout(() => {
     const users = getUsers();
     const user  = users.find(u =>
@@ -794,7 +804,7 @@ function handleLogin() {
     );
 
     if (!user) {
-      setLoading('btnLogin','spinLogin','btnLoginTxt', false);
+      setLoading('btnLogin', 'spinLogin', 'btnLoginTxt', false);
       el('loginPass').classList.add('error');
       el('loginPassErr').textContent = 'Correo o contraseña incorrectos';
       el('loginPassErr').classList.add('show');
@@ -802,21 +812,40 @@ function handleLogin() {
       return;
     }
 
-    /* Guardar sesión */
-    const session = { userId: user.id, name: user.name, email: user.email };
+    /*
+     * CORRECCIÓN ①: guardar sesión con todos los datos del usuario
+     * para que requireAuth() en app.js pueda sincronizar el perfil.
+     */
+    const session = {
+      userId:     user.id,
+      name:       user.name,
+      email:      user.email,
+      university: user.university || '',
+      career:     user.career     || '',
+    };
+
     if (el('rememberMe').checked) {
       localStorage.setItem('ap_session', JSON.stringify(session));
     } else {
       sessionStorage.setItem('ap_session', JSON.stringify(session));
     }
 
-    /* Guardar perfil en el formato que usa el resto de la app */
-    localStorage.setItem('ap_profile', JSON.stringify({
-      name: user.name, university: user.university || '',
-      career: user.career || '', semester: ''
-    }));
+    /*
+     * CORRECCIÓN ②: usar la clave correcta "ap_profile" que coincide
+     * con DB.set('profile', ...) → localStorage key = "ap_profile".
+     * Solo actualizar si no hay perfil previo para no perder datos editados.
+     */
+    const existingProfile = localStorage.getItem('ap_profile');
+    if (!existingProfile) {
+      localStorage.setItem('ap_profile', JSON.stringify({
+        name:       user.name,
+        university: user.university || '',
+        career:     user.career     || '',
+        semester:   '',
+      }));
+    }
 
-    showAlert('¡Bienvenido, ' + user.name.split(' ')[0] + '! Redirigiendo…', 'success');
+    showAlert(`¡Bienvenido, ${user.name.split(' ')[0]}! Redirigiendo…`, 'success');
     setTimeout(() => { window.location.href = 'index.html'; }, 900);
   }, 700);
 }
@@ -833,24 +862,38 @@ function handleRegister() {
     return;
   }
 
-  setLoading('btnRegister','spinReg','btnRegTxt', true);
+  setLoading('btnRegister', 'spinReg', 'btnRegTxt', true);
 
   setTimeout(() => {
     const users = getUsers();
+
+    /*
+     * CORRECCIÓN ③: verificar duplicado justo antes de guardar
+     * (por si el usuario abrió dos pestañas).
+     */
+    if (emailExists(val('regEmail'))) {
+      setLoading('btnRegister', 'spinReg', 'btnRegTxt', false);
+      showAlert('Este correo ya está registrado. Inicia sesión.', 'error');
+      return;
+    }
+
+    /*
+     * CORRECCIÓN ④: uid con timestamp + random para evitar colisiones.
+     */
     const newUser = {
-      id:        Date.now().toString(36),
+      id:        Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 6),
       name:      val('regName'),
       email:     val('regEmail').toLowerCase(),
       password:  hashSimple(el('regPass').value),
       createdAt: Date.now(),
     };
+
     users.push(newUser);
     saveUsers(users);
 
-    setLoading('btnRegister','spinReg','btnRegTxt', false);
-    showAlert('¡Cuenta creada! Ahora puedes iniciar sesión.', 'success');
+    setLoading('btnRegister', 'spinReg', 'btnRegTxt', false);
+    showAlert('¡Cuenta creada exitosamente! Ahora inicia sesión.', 'success');
 
-    /* Pre-llenar el login y cambiar de tab */
     setTimeout(() => {
       switchTab('login');
       el('loginEmail').value = newUser.email;
@@ -869,19 +912,24 @@ function handleForgot() {
   }
   el('forgotEmail').classList.remove('error');
   el('forgotEmailErr').classList.remove('show');
-  /* En una app real aquí llamarías a tu backend */
   showAlert('Si el correo está registrado, recibirás un enlace en breve.', 'success');
   el('forgotEmail').value = '';
 }
 
-/* ── Verificar sesión activa ── */
+/*
+ * CORRECCIÓN ⑤: checkSession verifica tanto localStorage como
+ * sessionStorage para manejar ambos tipos de sesión correctamente.
+ */
 (function checkSession() {
-  const s = localStorage.getItem('ap_session') || sessionStorage.getItem('ap_session');
-  if (s) {
-    try {
-      const session = JSON.parse(s);
-      if (session?.userId) window.location.href = 'index.html';
-    } catch(_) {}
+  try {
+    const raw = localStorage.getItem('ap_session') || sessionStorage.getItem('ap_session');
+    if (!raw) return;
+    const session = JSON.parse(raw);
+    if (session?.userId) window.location.href = 'index.html';
+  } catch (_) {
+    /* Sesión corrupta — limpiar */
+    localStorage.removeItem('ap_session');
+    sessionStorage.removeItem('ap_session');
   }
 })();
 

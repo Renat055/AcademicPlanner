@@ -205,7 +205,15 @@
         <div class="card">
           <div class="card-head">
             <span class="card-title">Materias</span>
-            <button class="link-btn" onclick="navigate('grades')">Ver notas</button>
+            <div style="display:flex;gap:6px;align-items:center;">
+              <button class="link-btn" onclick="openSubjectModal()" title="Agregar materia" style="
+                display:inline-flex;align-items:center;gap:3px;
+                padding:3px 8px;border-radius:6px;
+                background:var(--accent-bg);color:var(--accent);
+                font-weight:600;font-size:.78rem;
+              ">+ Nueva</button>
+              <button class="link-btn" onclick="navigate('grades')">Ver notas</button>
+            </div>
           </div>
           <div id="dashSubjects" class="list-wrap">
             <div class="empty-msg">Agrega materias y notas</div>

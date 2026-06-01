@@ -61,10 +61,20 @@ function saveSubject() {
   }
 
   DB.set('subjects', subjects);
+
+  /* Sincronizar todos los selects de materias */
   populateSubjectSelects();
   closeModal('subjectModal');
-  renderGrades();
-  renderDashSubjects();
+
+  /*
+   * CORRECCIÓN: renderizar tanto la página de notas (si está activa)
+   * como el panel de materias del dashboard, y actualizar KPIs.
+   * Así el usuario ve el cambio inmediatamente sin navegar.
+   */
+  if (typeof renderGrades === 'function')       renderGrades();
+  if (typeof renderDashSubjects === 'function') renderDashSubjects();
+  if (typeof renderDashKPIs === 'function')     renderDashKPIs();
+
   editingSubjectId = null;
 }
 
